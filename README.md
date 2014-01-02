@@ -69,11 +69,13 @@ dao.deleteById(customerId);
 Maven
 -----
 
-    <dependency>
-        <groupId>com.neovisionaries</groupId>
-        <artifactId>nv-jdo</artifactId>
-        <version>1.0</version>
-    </dependency>
+```xml
+<dependency>
+    <groupId>com.neovisionaries</groupId>
+    <artifactId>nv-jdo</artifactId>
+    <version>1.0</version>
+</dependency>
+```
 
 
 See Also
