@@ -37,6 +37,9 @@ import javax.jdo.PersistenceManagerFactory;
  * <span class="comment">// Create a DAO with an entity class.</span>
  * JdoDao&lt;Customer&gt; dao = new JdoDao&lt;Customer&gt;(Customer.class);
  *
+ * <span class="comment">// or</span>
+ * JdoDao&lt;Customer&gt; dao = JdoDao.{@link #create(Class) create}(Customer.class);
+ *
  * <span class="comment">// Use the DAO.</span>
  * Customer customer = dao.{@link #getById(Object) getById}(customerId);
  * </pre>
@@ -96,6 +99,30 @@ public class JdoDao<TEntity>
 
 
     /**
+     * Create a DAO for the specified entity.
+     *
+     * <p>
+     * This method just does the following:
+     * </p>
+     *
+     * <blockquote><pre>
+     * return new JdoDao&lt;TEntity&gt;(entityClass);
+     * </pre></blockquote>
+     *
+     * @param entityClass
+     *
+     * @return
+     *         A new DAO.
+     *
+     * @since 1.1
+     */
+    public static <TEntity> JdoDao<TEntity> create(Class<TEntity> entityClass)
+    {
+        return new JdoDao<TEntity>(entityClass);
+    }
+
+
+    /**
      * Constructor.
      *
      * @param entityClass
@@ -129,8 +156,7 @@ public class JdoDao<TEntity>
      * Get the persistence manager factory for this instance.
      *
      * @return
-     *         The persistence manager factory that has been set via
-     *         {@link JdoDao#JdoDao(PersistenceManagerFactory)} or
+     *         The persistence manager factory that has been set by
      *         {@link #setPersistenceManagerFactory(PersistenceManagerFactory)}.
      */
     public PersistenceManagerFactory getPersistenceManagerFactory()
