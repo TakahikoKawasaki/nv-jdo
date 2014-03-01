@@ -48,6 +48,9 @@ JdoDao.setupSharedPersistenceManagerFactory("transactions-optional");
 // The example here creates a DAO dedicated to Customer class.
 JdoDao<Customer> dao = new JdoDao<Customer>(Customer.class);
 
+// or a DAO can be created by 'create' method.
+JdoDao<Customer> dao = JdoDao.create(Customer.class);
+
 // Use the DAO.
 
 // (1) Create an entity.
@@ -73,7 +76,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 </dependency>
 ```
 
