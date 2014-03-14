@@ -573,9 +573,16 @@ public class Dao<TEntity>
      *         {@code entity} is {@code null}.
      *
      * @throws IllegalStateException
-     *         Persistence manager factory is not set.
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
      *
      * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#makePersistent(Object)
+     *         makePersistent(entity)} failed.
      */
     public void put(TEntity entity)
             throws IllegalArgumentException, IllegalStateException, JDOUserException
@@ -583,6 +590,71 @@ public class Dao<TEntity>
         checkNonNull(entity, "entity");
         checkFactory();
 
-        // TODO
+        put(entity, factory);
+    }
+
+
+    /**
+     * Make an entity persistent.
+     *
+     * @param entity
+     *         An entity to be made persistent.
+     *
+     * @param factory
+     *         An persistence manager factory.
+     *
+     * @throws IllegalArgumentException
+     *         {@code entity} is {@code null}, or {@code factory} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#makePersistent(Object)
+     *         makePersistent(entity)} failed.
+     */
+    public void put(TEntity entity, PersistenceManagerFactory factory)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(entity, "entity");
+        checkNonNull(factory, "factory");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            put(entity, manager);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Make an entity persistent.
+     *
+     * @param entity
+     *         An entity to be made persistent.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @throws IllegalArgumentException
+     *         {@code entity} is {@code null}, or {@code manager} is {@code null}.
+     *
+     * @throws JDOUserException
+     *         {@code manager.}{@link PersistenceManager#makePersistent(Object)
+     *         makePersistent(entity)} failed.
+     */
+    public void put(TEntity entity, PersistenceManager manager)
+            throws IllegalArgumentException, JDOUserException
+    {
+        checkNonNull(entity, "entity");
+        checkNonNull(manager, "manager");
+
+        manager.makePersistent(entity);
     }
 }
