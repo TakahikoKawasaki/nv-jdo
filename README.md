@@ -6,7 +6,9 @@ Overview
 
 Utilities related to JDO.
 
-* JdoDao - Generic DAO implementation based on JDO.
+* Dao - Generic DAO implementation based on JDO.
+* Task - Task executed by TaskExecutor.
+* TaskExecutor - Task executor.
 
 
 License
@@ -31,25 +33,19 @@ Example
 -------
 
 ```java
-//--------------------------------------------------
-// Example of JdoDao, which is a generic DAO
-// implementation based on JDO.
-//--------------------------------------------------
+//------------------------------------------------------
+// Example of Dao, which is a generic DAO implementation
+// based on JDO.
+//------------------------------------------------------
 
-// Set up a shared persistence manager factory.
-//
-// The persistence manager factory set up here is used
-// as fail-safe for JdoDao instances which do not have
-// their own persistence manager factory.
-JdoDao.setupSharedPersistenceManagerFactory("transactions-optional");
+// Persistence manager factory.
+ PersistenceManagerFactory factory = ...;
 
-// Create a DAO with an entity class.
-//
-// The example here creates a DAO dedicated to Customer class.
-JdoDao<Customer> dao = new JdoDao<Customer>(Customer.class);
+// Create a DAO with an entity class and the persistence manager factory.
+Dao<Customer> dao = new Dao<Customer>(Customer.class, factory);
 
-// or a DAO can be created by 'create' method.
-JdoDao<Customer> dao = JdoDao.create(Customer.class);
+// Or using a static method.
+Dao<Customer> dao = Dao.create(Customer.class, factory);
 
 // Use the DAO.
 
@@ -68,6 +64,27 @@ dao.delete(customer);
 dao.deleteById(customerId);
 ```
 
+```java
+//------------------------------------------------------
+// Example of TaskExecutor.
+//------------------------------------------------------
+// Persistence manager factory.
+PersistenceManagerFactory factory = ...;
+
+// Create a task executor.
+TaskExecutor executor = new TaskExecutor(factory);
+
+// Create a task.
+Task task = new Task() {
+    @Override
+    public Object run(PersistenceManager manager) {
+        ......
+    }
+};
+
+// Execute the task.
+executor.execute(task, true, 2);
+```
 
 Maven
 -----
@@ -76,7 +93,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 </dependency>
 ```
 
