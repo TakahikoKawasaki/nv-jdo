@@ -169,11 +169,13 @@ public class TaskExecutor
      *         <li>{@link PersistenceManagerFactory#getPersistenceManager()
      *             getPersistenceManager()} of the persistence manager factory
      *             returned {@code null}.
-     *         <li>The task threw a {@code RuntimeException} other than
-     *             {@link JDOCanRetryException}.
      *         <li>The task continued to throw {@link JDOCanRetryException} and
      *             exceeded the retry count.
      *         </ul>
+     *
+     * @throws RuntimeException
+     *         The task continued to throw {@link JDOCanRetryException} and
+     *         exceeded the retry count.
      */
     public Object execute(Task task, boolean transaction, int retryCount)
     {

@@ -20,6 +20,7 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.JDOUserException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.Query;
 
 
 /**
@@ -613,6 +614,8 @@ public class Dao<TEntity>
      * @throws JDOUserException
      *         {@code PersistenceManager.}{@link PersistenceManager#makePersistent(Object)
      *         makePersistent(entity)} failed.
+     *
+     * @since 1.3
      */
     public void put(TEntity entity, PersistenceManagerFactory factory)
             throws IllegalArgumentException, IllegalStateException, JDOUserException
@@ -648,6 +651,8 @@ public class Dao<TEntity>
      * @throws JDOUserException
      *         {@code manager.}{@link PersistenceManager#makePersistent(Object)
      *         makePersistent(entity)} failed.
+     *
+     * @since 1.3
      */
     public void put(TEntity entity, PersistenceManager manager)
             throws IllegalArgumentException, JDOUserException
@@ -656,5 +661,37 @@ public class Dao<TEntity>
         checkNonNull(manager, "manager");
 
         manager.makePersistent(entity);
+    }
+
+
+    /**
+     * Get an entity using a condition that identifies the unique entity.
+     *
+     * @param field
+     *         A database column name which has UNIQUE constraint.
+     *
+     * @param value
+     *         A value of the data field which identifies the unique entity.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @return
+     *         A unique entity, or {@code null} if not found.
+     *
+     * @since 1.4
+     */
+    @SuppressWarnings("unchecked")
+    public TEntity getUnique(String field, Object value, PersistenceManager manager)
+    {
+        checkNonNull(field, "field");
+        checkNonNull(value, "value");
+        checkNonNull(manager, "manager");
+
+        Query query = manager.newQuery(entityClass);
+        query.setUnique(true);
+        query.setFilter(field + " == :value");
+
+        return (TEntity)query.execute(value);
     }
 }
