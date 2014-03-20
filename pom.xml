@@ -10,7 +10,7 @@
 
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
     <name>Neo Visionaries JDO package</name>
     <description>Utilities related to JDO</description>
