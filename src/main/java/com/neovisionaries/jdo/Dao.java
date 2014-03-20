@@ -673,19 +673,105 @@ public class Dao<TEntity>
      * @param value
      *         A value of the data field which identifies the unique entity.
      *
+     * @return
+     *         A unique entity, or {@code null} if not found.
+     *
+     * @throws IllegalArgumentException
+     *         {@code field} is {@code null} or {@code value} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.5
+     */
+    public TEntity getUnique(String field, Object value)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(field, "field");
+        checkNonNull(value, "value");
+        checkFactory();
+
+        return getUnique(field, value, factory);
+    }
+
+
+    /**
+     * Get an entity using a condition that identifies the unique entity.
+     *
+     * @param field
+     *         A database column name which has UNIQUE constraint.
+     *
+     * @param value
+     *         A value of the data field which identifies the unique entity.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @return
+     *         A unique entity, or {@code null} if not found.
+     *
+     * @throws IllegalArgumentException
+     *         {@code field} is {@code null}, {@code value} is {@code null},
+     *         or {@code factory} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.5
+     */
+    public TEntity getUnique(String field, Object value, PersistenceManagerFactory factory)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(field,   "field");
+        checkNonNull(value,   "value");
+        checkNonNull(factory, "factory");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return getUnique(field, value, manager);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Get an entity using a condition that identifies the unique entity.
+     *
+     * @param field
+     *         A database column name which has UNIQUE constraint.
+     *
+     * @param value
+     *         A value of the data field which identifies the unique entity.
+     *
      * @param manager
      *         A persistence manager.
      *
      * @return
      *         A unique entity, or {@code null} if not found.
      *
+     * @throws IllegalArgumentException
+     *         {@code field} is {@code null}, {@code value} is {@code null},
+     *         or {@code manager} is {@code null}.
+     *
      * @since 1.4
      */
     @SuppressWarnings("unchecked")
     public TEntity getUnique(String field, Object value, PersistenceManager manager)
+            throws IllegalArgumentException
     {
-        checkNonNull(field, "field");
-        checkNonNull(value, "value");
+        checkNonNull(field,   "field");
+        checkNonNull(value,   "value");
         checkNonNull(manager, "manager");
 
         Query query = manager.newQuery(entityClass);
