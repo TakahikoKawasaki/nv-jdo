@@ -26,7 +26,7 @@ Download
 Javadoc
 -------
 
-[nv-jdo javadoc](http://TakahikoKawasaki.github.com/nv-jdo/)
+[nv-jdo JavaDoc](http://TakahikoKawasaki.github.com/nv-jdo/)
 
 
 Example
@@ -93,7 +93,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
 </dependency>
 ```
 
