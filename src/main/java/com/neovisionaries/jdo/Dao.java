@@ -16,6 +16,7 @@
 package com.neovisionaries.jdo;
 
 
+import java.util.Collection;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.JDOUserException;
 import javax.jdo.PersistenceManager;
@@ -266,21 +267,21 @@ public class Dao<TEntity>
         checkNonNull(entity, "entity");
         checkFactory();
 
-        delete(entity, factory);
+        delete(factory, entity);
     }
 
 
     /**
      * Delete an entity.
      *
-     * @param entity
-     *         An entity to be deleted.
-     *
      * @param factory
      *         A persistence manager factory.
      *
+     * @param entity
+     *         An entity to be deleted.
+     *
      * @throws IllegalArgumentException
-     *         {@code entity} is {@code null}, or {@code factory} is {@code null}.
+     *         {@code factory} is {@code null}, or {@code entity} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
@@ -289,18 +290,20 @@ public class Dao<TEntity>
      * @throws JDOUserException
      *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistent(Object)
      *         deletePersistent(entity)} failed.
+     *
+     * @since 1.6
      */
-    public void delete(TEntity entity, PersistenceManagerFactory factory)
+    public void delete(PersistenceManagerFactory factory, TEntity entity)
             throws IllegalArgumentException, IllegalStateException, JDOUserException
     {
-        checkNonNull(entity,  "entity");
         checkNonNull(factory, "factory");
+        checkNonNull(entity,  "entity");
 
         PersistenceManager manager = createManager(factory);
 
         try
         {
-            delete(entity, manager);
+            delete(manager, entity);
         }
         finally
         {
@@ -312,24 +315,26 @@ public class Dao<TEntity>
     /**
      * Delete an entity.
      *
-     * @param entity
-     *         An entity to be deleted.
-     *
      * @param manager
      *         A persistence manager.
      *
+     * @param entity
+     *         An entity to be deleted.
+     *
      * @throws IllegalArgumentException
-     *         {@code entity} is {@code null}, or {@code manager} is {@code null}.
+     *         {@code manager} is {@code null}, or {@code entity} is {@code null}.
      *
      * @throws JDOUserException
      *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistent(Object)
      *         deletePersistent(entity)} failed.
+     *
+     * @since 1.6
      */
-    public void delete(TEntity entity, PersistenceManager manager)
+    public void delete(PersistenceManager manager, TEntity entity)
             throws IllegalArgumentException, JDOUserException
     {
-        checkNonNull(entity,  "entity");
         checkNonNull(manager, "manager");
+        checkNonNull(entity,  "entity");
 
         manager.deletePersistent(entity);
     }
@@ -367,7 +372,7 @@ public class Dao<TEntity>
         checkNonNull(id, "id");
         checkFactory();
 
-        deleteById(id, factory);
+        deleteById(factory, id);
     }
 
 
@@ -375,14 +380,14 @@ public class Dao<TEntity>
      * Delete an entity by ID. If there is no entity having the ID,
      * no change is made.
      *
-     * @param id
-     *         Entity ID.
-     *
      * @param factory
      *         A persistence manager factory.
      *
+     * @param id
+     *         Entity ID.
+     *
      * @throws IllegalArgumentException
-     *         {@code id} is {@code null}, or {@code factory} is {@code null}.
+     *         {@code factory} is {@code null}, or {@code id} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
@@ -394,18 +399,20 @@ public class Dao<TEntity>
      * @throws JDOUserException
      *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistent(Object)
      *         deletePersistent(entity)} failed.
+     *
+     * @since 1.6
      */
-    public void deleteById(Object id, PersistenceManagerFactory factory)
+    public void deleteById(PersistenceManagerFactory factory, Object id)
             throws IllegalArgumentException, IllegalStateException, JDOUserException
     {
-        checkNonNull(id,      "id");
         checkNonNull(factory, "factory");
+        checkNonNull(id,      "id");
 
         PersistenceManager manager = createManager(factory);
 
         try
         {
-            deleteById(id, manager);
+            deleteById(manager, id);
         }
         finally
         {
@@ -418,14 +425,14 @@ public class Dao<TEntity>
      * Delete an entity by ID. If there is no entity having the ID,
      * no change is made.
      *
-     * @param id
-     *         Entity ID.
-     *
      * @param manager
      *         A persistence manager.
      *
+     * @param id
+     *         Entity ID.
+     *
      * @throws IllegalArgumentException
-     *         {@code id} is {@code null}, or {@code manager} is {@code null}.
+     *         {@code manager} is {@code null}, or {@code id} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code PersistenceManager.}{@link PersistenceManager#getObjectById(Class, Object)
@@ -435,19 +442,227 @@ public class Dao<TEntity>
      * @throws JDOUserException
      *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistent(Object)
      *         deletePersistent(entity)} failed.
+     *
+     * @since 1.6
      */
-    public void deleteById(Object id, PersistenceManager manager)
+    public void deleteById(PersistenceManager manager, Object id)
             throws IllegalArgumentException, IllegalStateException, JDOUserException
     {
-        checkNonNull(id,      "id");
         checkNonNull(manager, "manager");
+        checkNonNull(id,      "id");
 
-        TEntity entity = getById(id, manager);
+        TEntity entity = getById(manager, id);
 
         if (entity != null)
         {
-            delete(entity, manager);
+            delete(manager, entity);
         }
+    }
+
+
+    /**
+     * Delete entities. A persistence manager factory must be set
+     * before this method is called.
+     *
+     * @param entities
+     *         Entities to be deleted.
+     *
+     * @throws IllegalArgumentException
+     *         {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistentAll(Collection)
+     *         deletePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public void deleteAll(Collection<TEntity> entities)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(entities, "entities");
+        checkFactory();
+
+        deleteAll(factory, entities);
+    }
+
+
+    /**
+     * Delete entities.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param entities
+     *         Entities to be deleted.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistentAll(Collection)
+     *         deletePersistentAll(Collection)} failed.
+     *
+     * @since 1.6
+     */
+    public void deleteAll(PersistenceManagerFactory factory, Collection<TEntity> entities)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(entities, "entities");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            deleteAll(manager, entities);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Delete entities.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param entities
+     *         Entities to be deleted.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistentAll(Collection)
+     *         deletePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public void deleteAll(PersistenceManager manager, Collection<TEntity> entities)
+            throws IllegalArgumentException, JDOUserException
+    {
+        checkNonNull(manager,  "manager");
+        checkNonNull(entities, "entities");
+
+        manager.deletePersistentAll(entities);
+    }
+
+
+    /**
+     * Delete entities. A persistence manager factory must be set
+     * before this method is called.
+     *
+     * @param entities
+     *         Entities to be deleted.
+     *
+     * @throws IllegalArgumentException
+     *         {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistentAll(Object...)
+     *         deletePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public void deleteAll(TEntity... entities)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(entities, "entities");
+        checkFactory();
+
+        deleteAll(factory, entities);
+    }
+
+
+    /**
+     * Delete entities.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param entities
+     *         Entities to be deleted.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistentAll(Object...)
+     *         deletePersistentAll(Collection)} failed.
+     *
+     * @since 1.6
+     */
+    public void deleteAll(PersistenceManagerFactory factory, TEntity... entities)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(entities, "entities");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            deleteAll(manager, entities);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Delete entities.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param entities
+     *         Entities to be deleted.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#deletePersistentAll(Object...)
+     *         deletePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public void deleteAll(PersistenceManager manager, TEntity... entities)
+            throws IllegalArgumentException, JDOUserException
+    {
+        checkNonNull(manager,  "manager");
+        checkNonNull(entities, "entities");
+
+        manager.deletePersistentAll(entities);
     }
 
 
@@ -467,7 +682,6 @@ public class Dao<TEntity>
      *
      * @throws IllegalStateException
      *         A persistence manager factory is not set.
-     *
      */
     public TEntity getById(Object id)
             throws IllegalArgumentException, IllegalStateException
@@ -475,24 +689,24 @@ public class Dao<TEntity>
         checkNonNull(id, "id");
         checkFactory();
 
-        return getById(id, factory);
+        return getById(factory, id);
     }
 
 
     /**
      * Get an entity having the specified ID.
      *
-     * @param id
-     *         Entity ID.
-     *
      * @param factory
      *         A persistence manager factory.
+     *
+     * @param id
+     *         Entity ID.
      *
      * @return
      *         An entity, or {@code null} if not found.
      *
      * @throws IllegalArgumentException
-     *         {@code id} is {@code null}, or {@code factory} is {@code null}.
+     *         {@code factory} is {@code null}, or {@code id} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
@@ -500,18 +714,20 @@ public class Dao<TEntity>
      *         {@code PersistenceManager.}{@link PersistenceManager#getObjectById(Class, Object)
      *         getObjectById(entityClass, id)} threw an exception other than
      *         {@link JDOObjectNotFoundException}.
+     *
+     * @since 1.6
      */
-    public TEntity getById(Object id, PersistenceManagerFactory factory)
+    public TEntity getById(PersistenceManagerFactory factory, Object id)
             throws IllegalArgumentException, IllegalStateException
     {
-        checkNonNull(id,      "id");
         checkNonNull(factory, "factory");
+        checkNonNull(id,      "id");
 
         PersistenceManager manager = createManager(factory);
 
         try
         {
-            return getById(id, manager);
+            return getById(manager, id);
         }
         finally
         {
@@ -523,28 +739,30 @@ public class Dao<TEntity>
     /**
      * Get an entity having the specified ID.
      *
-     * @param id
-     *         Entity ID.
-     *
      * @param manager
      *         A persistence manager.
+     *
+     * @param id
+     *         Entity ID.
      *
      * @return
      *         An entity, or {@code null} if not found.
      *
      * @throws IllegalArgumentException
-     *         {@code id} is {@code null}, or {@code manager} is {@code null}.
+     *         {@code manager} is {@code null}, or {@code id} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code PersistenceManager.}{@link PersistenceManager#getObjectById(Class, Object)
      *         getObjectById(entityClass, id)} threw an exception other than
      *         {@link JDOObjectNotFoundException}.
+     *
+     * @since 1.6
      */
-    public TEntity getById(Object id, PersistenceManager manager)
+    public TEntity getById(PersistenceManager manager, Object id)
             throws IllegalArgumentException , IllegalStateException
     {
-        checkNonNull(id,      "id");
         checkNonNull(manager, "manager");
+        checkNonNull(id,      "id");
 
         try
         {
@@ -591,21 +809,21 @@ public class Dao<TEntity>
         checkNonNull(entity, "entity");
         checkFactory();
 
-        put(entity, factory);
+        put(factory, entity);
     }
 
 
     /**
      * Make an entity persistent.
      *
-     * @param entity
-     *         An entity to be made persistent.
-     *
      * @param factory
      *         An persistence manager factory.
      *
+     * @param entity
+     *         An entity to be made persistent.
+     *
      * @throws IllegalArgumentException
-     *         {@code entity} is {@code null}, or {@code factory} is {@code null}.
+     *         {@code factory} is {@code null}, or {@code entity} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
@@ -615,19 +833,19 @@ public class Dao<TEntity>
      *         {@code PersistenceManager.}{@link PersistenceManager#makePersistent(Object)
      *         makePersistent(entity)} failed.
      *
-     * @since 1.3
+     * @since 1.6
      */
-    public void put(TEntity entity, PersistenceManagerFactory factory)
+    public void put(PersistenceManagerFactory factory, TEntity entity)
             throws IllegalArgumentException, IllegalStateException, JDOUserException
     {
-        checkNonNull(entity, "entity");
         checkNonNull(factory, "factory");
+        checkNonNull(entity,  "entity");
 
         PersistenceManager manager = createManager(factory);
 
         try
         {
-            put(entity, manager);
+            put(manager, entity);
         }
         finally
         {
@@ -639,28 +857,233 @@ public class Dao<TEntity>
     /**
      * Make an entity persistent.
      *
-     * @param entity
-     *         An entity to be made persistent.
-     *
      * @param manager
      *         A persistence manager.
      *
+     * @param entity
+     *         An entity to be made persistent.
+     *
      * @throws IllegalArgumentException
-     *         {@code entity} is {@code null}, or {@code manager} is {@code null}.
+     *         {@code manager} is {@code null}, or {@code entity} is {@code null}.
      *
      * @throws JDOUserException
      *         {@code manager.}{@link PersistenceManager#makePersistent(Object)
      *         makePersistent(entity)} failed.
      *
-     * @since 1.3
+     * @since 1.6
      */
-    public void put(TEntity entity, PersistenceManager manager)
+    public void put(PersistenceManager manager, TEntity entity)
             throws IllegalArgumentException, JDOUserException
     {
-        checkNonNull(entity, "entity");
         checkNonNull(manager, "manager");
+        checkNonNull(entity,  "entity");
 
         manager.makePersistent(entity);
+    }
+
+
+    /**
+     * Make entities persistent.
+     * A persistence manager factory must be set
+     * before this method is called.
+     *
+     * @param entities
+     *         Entities to be made persistent.
+     *
+     * @throws IllegalArgumentException
+     *         {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#makePersistentAll(Collection)
+     *         makePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public Collection<TEntity> putAll(Collection<TEntity> entities)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(entities, "entities");
+        checkFactory();
+
+        return putAll(factory, entities);
+    }
+
+
+    /**
+     * Make entities persistent.
+     *
+     * @param factory
+     *         An persistence manager factory.
+     *
+     * @param entities
+     *         Entities to be made persistent.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#makePersistentAll(Collection)
+     *         makePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public Collection<TEntity> putAll(PersistenceManagerFactory factory, Collection<TEntity> entities)
+            throws IllegalArgumentException, IllegalStateException, JDOUserException
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(entities, "entities");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return putAll(manager, entities);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Make entities persistent.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param entities
+     *         Entities to be made persistent.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws JDOUserException
+     *         {@code manager.}{@link PersistenceManager#makePersistentAll(Collection)
+     *         makePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public Collection<TEntity> putAll(PersistenceManager manager, Collection<TEntity> entities)
+            throws IllegalArgumentException, JDOUserException
+    {
+        checkNonNull(manager,  "manager");
+        checkNonNull(entities, "entities");
+
+        return manager.makePersistentAll(entities);
+    }
+
+
+    /**
+     * Make entities persistent.
+     * A persistence manager factory must be set
+     * before this method is called.
+     *
+     * @param entities
+     *         Entities to be made persistent.
+     *
+     * @throws IllegalArgumentException
+     *         {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#makePersistentAll(Object...)
+     *         makePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public TEntity[] putAll(TEntity... entities)
+    {
+        checkNonNull(entities, "entities");
+        checkFactory();
+
+        return putAll(factory, entities);
+    }
+
+
+    /**
+     * Make entities persistent.
+     *
+     * @param factory
+     *         An persistence manager factory.
+     *
+     * @param entities
+     *         Entities to be made persistent.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @throws JDOUserException
+     *         {@code PersistenceManager.}{@link PersistenceManager#makePersistentAll(Object...)
+     *         makePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public TEntity[] putAll(PersistenceManagerFactory factory, TEntity... entities)
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(entities, "entities");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return putAll(manager, entities);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Make entities persistent.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param entities
+     *         Entities to be made persistent.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code entities} is {@code null}.
+     *
+     * @throws JDOUserException
+     *         {@code manager.}{@link PersistenceManager#makePersistentAll(Object...)
+     *         makePersistentAll(entities)} failed.
+     *
+     * @since 1.6
+     */
+    public TEntity[] putAll(PersistenceManager manager, TEntity... entities)
+    {
+        checkNonNull(manager,  "manager");
+        checkNonNull(entities, "entities");
+
+        return manager.makePersistentAll(entities);
     }
 
 
@@ -696,12 +1119,15 @@ public class Dao<TEntity>
         checkNonNull(value, "value");
         checkFactory();
 
-        return getUnique(field, value, factory);
+        return getUnique(factory, field, value);
     }
 
 
     /**
      * Get an entity using a condition that identifies the unique entity.
+     *
+     * @param factory
+     *         A persistence manager factory.
      *
      * @param field
      *         A database column name which has UNIQUE constraint.
@@ -709,34 +1135,31 @@ public class Dao<TEntity>
      * @param value
      *         A value of the data field which identifies the unique entity.
      *
-     * @param factory
-     *         A persistence manager factory.
-     *
      * @return
      *         A unique entity, or {@code null} if not found.
      *
      * @throws IllegalArgumentException
-     *         {@code field} is {@code null}, {@code value} is {@code null},
-     *         or {@code factory} is {@code null}.
+     *         {@code factory} is {@code null}, {@code field} is {@code null},
+     *         or {@code value} is {@code null}.
      *
      * @throws IllegalStateException
      *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
      *         getPersistenceManager()} failed.
      *
-     * @since 1.5
+     * @since 1.6
      */
-    public TEntity getUnique(String field, Object value, PersistenceManagerFactory factory)
+    public TEntity getUnique(PersistenceManagerFactory factory, String field, Object value)
             throws IllegalArgumentException, IllegalStateException
     {
+        checkNonNull(factory, "factory");
         checkNonNull(field,   "field");
         checkNonNull(value,   "value");
-        checkNonNull(factory, "factory");
 
         PersistenceManager manager = createManager(factory);
 
         try
         {
-            return getUnique(field, value, manager);
+            return getUnique(manager, field, value);
         }
         finally
         {
@@ -748,31 +1171,31 @@ public class Dao<TEntity>
     /**
      * Get an entity using a condition that identifies the unique entity.
      *
+     * @param manager
+     *         A persistence manager.
+     *
      * @param field
      *         A database column name which has UNIQUE constraint.
      *
      * @param value
      *         A value of the data field which identifies the unique entity.
      *
-     * @param manager
-     *         A persistence manager.
-     *
      * @return
      *         A unique entity, or {@code null} if not found.
      *
      * @throws IllegalArgumentException
-     *         {@code field} is {@code null}, {@code value} is {@code null},
-     *         or {@code manager} is {@code null}.
+     *         {@code manager} is {@code null}, {@code field} is {@code null},
+     *         or {@code value} is {@code null}.
      *
-     * @since 1.4
+     * @since 1.6
      */
     @SuppressWarnings("unchecked")
-    public TEntity getUnique(String field, Object value, PersistenceManager manager)
+    public TEntity getUnique(PersistenceManager manager, String field, Object value)
             throws IllegalArgumentException
     {
+        checkNonNull(manager, "manager");
         checkNonNull(field,   "field");
         checkNonNull(value,   "value");
-        checkNonNull(manager, "manager");
 
         Query query = manager.newQuery(entityClass);
         query.setUnique(true);
