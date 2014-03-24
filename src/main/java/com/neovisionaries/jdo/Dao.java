@@ -1208,6 +1208,124 @@ public class Dao<TEntity>
 
 
     /**
+     * Get entities using a condition that filters them.
+     * A persistence manager factory must be set before this method is called.
+     *
+     * @param field
+     *         A database column name.
+     *
+     * @param value
+     *         A value of the data field which filters entities.
+     *
+     * @return
+     *         Entity list.
+     *
+     * @throws IllegalArgumentException
+     *         {@code field} is {@code null} or {@code value} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.7
+     */
+    public List<TEntity> getList(String field, Object value)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(field, "field");
+        checkNonNull(value, "value");
+        checkFactory();
+
+        return getList(factory, field, value);
+    }
+
+
+    /**
+     * Get entities using a condition that filters them.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param field
+     *         A database column name.
+     *
+     * @param value
+     *         A value of the data field which filters entities.
+     *
+     * @return
+     *         Entity list.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, {@code field} is {@code null},
+     *         or {@code value} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.7
+     */
+    public List<TEntity> getList(PersistenceManagerFactory factory, String field, Object value)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory, "factory");
+        checkNonNull(field,   "field");
+        checkNonNull(value,   "value");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return getList(manager, field, value);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Get entities using a condition that filters them.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param field
+     *         A database column name.
+     *
+     * @param value
+     *         A value of the data field which filters entities.
+     *
+     * @return
+     *         Entity list.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, {@code field} is {@code null},
+     *         or {@code value} is {@code null}.
+     *
+     * @since 1.7
+     */
+    @SuppressWarnings("unchecked")
+    public List<TEntity> getList(PersistenceManager manager, String field, Object value)
+            throws IllegalArgumentException
+    {
+        checkNonNull(manager, "manager");
+        checkNonNull(field,   "field");
+        checkNonNull(value,   "value");
+
+        Query query = manager.newQuery(entityClass);
+        query.setFilter(field + " == :value");
+
+        return (List<TEntity>)query.execute(value);
+    }
+
+
+    /**
      * Get entities using JDOQL.
      * A persistence manager factory must be set before this method is called.
      *
@@ -1231,15 +1349,15 @@ public class Dao<TEntity>
      *         PersistenceManagerFactory#getPersistenceManager()
      *         getPersistenceManager()} failed).
      *
-     * @since 1.6
+     * @since 1.7
      */
-    public List<TEntity> getList(String jdoql, Object... parameters)
+    public List<TEntity> getListByQuery(String jdoql, Object... parameters)
             throws IllegalArgumentException, IllegalStateException
     {
         checkNonNull(jdoql, "jdoql");
         checkFactory();
 
-        return getList(factory, jdoql, parameters);
+        return getListByQuery(factory, jdoql, parameters);
     }
 
 
@@ -1265,9 +1383,9 @@ public class Dao<TEntity>
      *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
      *         getPersistenceManager()} failed.
      *
-     * @since 1.6
+     * @since 1.7
      */
-    public List<TEntity> getList(PersistenceManagerFactory factory, String jdoql, Object... parameters)
+    public List<TEntity> getListByQuery(PersistenceManagerFactory factory, String jdoql, Object... parameters)
             throws IllegalArgumentException, IllegalStateException
     {
         checkNonNull(factory, "factory");
@@ -1277,7 +1395,7 @@ public class Dao<TEntity>
 
         try
         {
-            return getList(manager, jdoql, parameters);
+            return getListByQuery(manager, jdoql, parameters);
         }
         finally
         {
@@ -1304,10 +1422,10 @@ public class Dao<TEntity>
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
      *
-     * @since 1.6
+     * @since 1.7
      */
     @SuppressWarnings("unchecked")
-    public List<TEntity> getList(PersistenceManager manager, String jdoql, Object... parameters)
+    public List<TEntity> getListByQuery(PersistenceManager manager, String jdoql, Object... parameters)
             throws IllegalArgumentException
     {
         checkNonNull(manager, "manager");
