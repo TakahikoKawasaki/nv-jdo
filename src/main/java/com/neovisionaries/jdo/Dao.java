@@ -17,6 +17,7 @@ package com.neovisionaries.jdo;
 
 
 import java.util.Collection;
+import java.util.List;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.JDOUserException;
 import javax.jdo.PersistenceManager;
@@ -1089,6 +1090,7 @@ public class Dao<TEntity>
 
     /**
      * Get an entity using a condition that identifies the unique entity.
+     * A persistence manager factory must be set before this method is called.
      *
      * @param field
      *         A database column name which has UNIQUE constraint.
@@ -1202,5 +1204,118 @@ public class Dao<TEntity>
         query.setFilter(field + " == :value");
 
         return (TEntity)query.execute(value);
+    }
+
+
+    /**
+     * Get entities using JDOQL.
+     * A persistence manager factory must be set before this method is called.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @return
+     *         Entities.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.6
+     */
+    public List<TEntity> getList(String jdoql, Object... parameters)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(jdoql, "jdoql");
+        checkFactory();
+
+        return getList(factory, jdoql, parameters);
+    }
+
+
+    /**
+     * Get entities using JDOQL.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @return
+     *         Entities.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.6
+     */
+    public List<TEntity> getList(PersistenceManagerFactory factory, String jdoql, Object... parameters)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory, "factory");
+        checkNonNull(jdoql,   "jdoql");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return getList(manager, jdoql, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Get entities using JDOQL.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @return
+     *         Entities.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @since 1.6
+     */
+    @SuppressWarnings("unchecked")
+    public List<TEntity> getList(PersistenceManager manager, String jdoql, Object... parameters)
+            throws IllegalArgumentException
+    {
+        checkNonNull(manager, "manager");
+        checkNonNull(jdoql,   "jdoql");
+
+        Query query = manager.newQuery(jdoql);
+        query.setClass(entityClass);
+
+        return (List<TEntity>)query.execute(parameters);
     }
 }
