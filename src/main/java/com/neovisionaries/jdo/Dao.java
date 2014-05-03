@@ -1434,7 +1434,7 @@ public class Dao<TEntity>
         Query query = manager.newQuery(jdoql);
         query.setClass(entityClass);
 
-        return (List<TEntity>)query.execute(parameters);
+        return (List<TEntity>)query.executeWithArray(parameters);
     }
 
 
@@ -1548,6 +1548,6 @@ public class Dao<TEntity>
         query.setClass(entityClass);
         query.setUnique(true);
 
-        return (TEntity)query.execute(parameters);
+        return (TEntity)query.executeWithArray(parameters);
     }
 }
