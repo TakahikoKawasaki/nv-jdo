@@ -696,7 +696,7 @@ public class Dao<TEntity>
         checkNonNull(jdoql, "jdoql");
         checkFactory();
 
-        return deleteByQuery(factory, jdoql, parameters);
+        deleteByQuery(factory, jdoql, parameters);
     }
 
 
@@ -757,7 +757,6 @@ public class Dao<TEntity>
      *
      * @since 1.10
      */
-    @SuppressWarnings("unchecked")
     public void deleteByQuery(PersistenceManager manager, String jdoql, Object... parameters)
             throws IllegalArgumentException
     {
