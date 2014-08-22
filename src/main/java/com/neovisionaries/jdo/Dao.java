@@ -1089,6 +1089,92 @@ public class Dao<TEntity>
 
 
     /**
+     * Get all entities.
+     * A persistence manager factory must be set before this method is called.
+     *
+     * @return
+     *         Entity list.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.11
+     */
+    public List<TEntity> getAll() throws IllegalStateException
+    {
+        checkFactory();
+
+        return getAll(factory);
+    }
+
+
+    /**
+     * Get all entities.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @return
+     *         Entity list.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.11
+     */
+    public List<TEntity> getAll(PersistenceManagerFactory factory)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory, "factory");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return getAll(manager);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Get all entities.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @return
+     *         Entity list.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}.
+     *
+     * @since 1.11
+     */
+    @SuppressWarnings("unchecked")
+    public List<TEntity> getAll(PersistenceManager manager) throws IllegalArgumentException
+    {
+        checkNonNull(manager, "manager");
+
+        Query query = manager.newQuery(entityClass);
+
+        return (List<TEntity>)query.execute();
+    }
+
+
+    /**
      * Get an entity using a condition that identifies the unique entity.
      * A persistence manager factory must be set before this method is called.
      *
