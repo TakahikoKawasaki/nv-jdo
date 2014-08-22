@@ -668,6 +668,109 @@ public class Dao<TEntity>
 
 
     /**
+     * Delete entities using JDOQL.
+     * A persistence manager factory must be set before this method is called.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.10
+     */
+    public void deleteByQuery(String jdoql, Object... parameters)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(jdoql, "jdoql");
+        checkFactory();
+
+        deleteByQuery(factory, jdoql, parameters);
+    }
+
+
+    /**
+     * Delete entities using JDOQL.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.10
+     */
+    public void deleteByQuery(PersistenceManagerFactory factory, String jdoql, Object... parameters)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory, "factory");
+        checkNonNull(jdoql,   "jdoql");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            deleteByQuery(manager, jdoql, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Delete entities using JDOQL.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @since 1.10
+     */
+    public void deleteByQuery(PersistenceManager manager, String jdoql, Object... parameters)
+            throws IllegalArgumentException
+    {
+        checkNonNull(manager, "manager");
+        checkNonNull(jdoql,   "jdoql");
+
+        Query query = manager.newQuery(jdoql);
+        query.setClass(entityClass);
+
+        query.deletePersistentAll(parameters);
+    }
+
+
+    /**
      * Get an entity having the specified ID.
      * A persistence manager factory must be set
      * before this method is called.
@@ -1520,6 +1623,120 @@ public class Dao<TEntity>
         Query query = manager.newQuery(jdoql);
         query.setClass(entityClass);
 
-        return (List<TEntity>)query.execute(parameters);
+        return (List<TEntity>)query.executeWithArray(parameters);
+    }
+
+
+    /**
+     * Get an entity using JDOQL.
+     * A persistence manager factory must be set before this method is called.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @return
+     *         An entity
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.8
+     */
+    public TEntity getByQuery(String jdoql, Object... parameters)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(jdoql, "jdoql");
+        checkFactory();
+
+        return getByQuery(factory, jdoql, parameters);
+    }
+
+
+    /**
+     * Get an entity using JDOQL.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @return
+     *         Entities.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.8
+     */
+    public TEntity getByQuery(PersistenceManagerFactory factory, String jdoql, Object... parameters)
+            throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory, "factory");
+        checkNonNull(jdoql,   "jdoql");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return getByQuery(manager, jdoql, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Get an entity using JDOQL.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param jdoql
+     *         JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the JDOQL.
+     *
+     * @return
+     *         An entity.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *
+     * @since 1.8
+     */
+    @SuppressWarnings("unchecked")
+    public TEntity getByQuery(PersistenceManager manager, String jdoql, Object... parameters)
+            throws IllegalArgumentException
+    {
+        checkNonNull(manager, "manager");
+        checkNonNull(jdoql,   "jdoql");
+
+        Query query = manager.newQuery(jdoql);
+        query.setClass(entityClass);
+        query.setUnique(true);
+
+        return (TEntity)query.executeWithArray(parameters);
     }
 }
