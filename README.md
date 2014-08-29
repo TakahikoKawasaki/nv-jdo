@@ -39,7 +39,7 @@ Example
 //------------------------------------------------------
 
 // Persistence manager factory.
- PersistenceManagerFactory factory = ...;
+PersistenceManagerFactory factory = ...;
 
 // Create a DAO with an entity class and the persistence manager factory.
 Dao<Customer> dao = new Dao<Customer>(Customer.class, factory);
@@ -93,7 +93,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.10</version>
+    <version>1.11</version>
 </dependency>
 ```
 
