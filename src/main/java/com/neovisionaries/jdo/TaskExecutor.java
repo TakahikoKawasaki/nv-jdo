@@ -290,6 +290,6 @@ public class TaskExecutor
 
         // The task continued to throw JDOCanRetryException and
         // exceeded the retry count.
-        throw new JDOException("task failed.", lastException);
+        throw lastException;
     }
 }
