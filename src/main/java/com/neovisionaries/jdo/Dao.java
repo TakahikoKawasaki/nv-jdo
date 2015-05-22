@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Neo Visionaries Inc.
+ * Copyright (C) 2014-2015 Neo Visionaries Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -677,6 +677,11 @@ public class Dao<TEntity>
      * @param parameters
      *         Parameters of the JDOQL.
      *
+     * @return
+     *         The number of deleted instances. This is the value
+     *         returned from {@link Query#deletePersistentAll(Object...)}
+     *         method.
+     *
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
      *
@@ -690,13 +695,13 @@ public class Dao<TEntity>
      *
      * @since 1.10
      */
-    public void deleteByQuery(String jdoql, Object... parameters)
+    public long deleteByQuery(String jdoql, Object... parameters)
             throws IllegalArgumentException, IllegalStateException
     {
         checkNonNull(jdoql, "jdoql");
         checkFactory();
 
-        deleteByQuery(factory, jdoql, parameters);
+        return deleteByQuery(factory, jdoql, parameters);
     }
 
 
@@ -712,6 +717,11 @@ public class Dao<TEntity>
      * @param parameters
      *         Parameters of the JDOQL.
      *
+     * @return
+     *         The number of deleted instances. This is the value
+     *         returned from {@link Query#deletePersistentAll(Object...)}
+     *         method.
+     *
      * @throws IllegalArgumentException
      *         {@code factory} is {@code null}, or {@code jdoql} is {@code null}.
      *
@@ -721,7 +731,7 @@ public class Dao<TEntity>
      *
      * @since 1.10
      */
-    public void deleteByQuery(PersistenceManagerFactory factory, String jdoql, Object... parameters)
+    public long deleteByQuery(PersistenceManagerFactory factory, String jdoql, Object... parameters)
             throws IllegalArgumentException, IllegalStateException
     {
         checkNonNull(factory, "factory");
@@ -731,7 +741,7 @@ public class Dao<TEntity>
 
         try
         {
-            deleteByQuery(manager, jdoql, parameters);
+            return deleteByQuery(manager, jdoql, parameters);
         }
         finally
         {
@@ -752,12 +762,17 @@ public class Dao<TEntity>
      * @param parameters
      *         Parameters of the JDOQL.
      *
+     * @return
+     *         The number of deleted instances. This is the value
+     *         returned from {@link Query#deletePersistentAll(Object...)}
+     *         method.
+     *
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
      *
      * @since 1.10
      */
-    public void deleteByQuery(PersistenceManager manager, String jdoql, Object... parameters)
+    public long deleteByQuery(PersistenceManager manager, String jdoql, Object... parameters)
             throws IllegalArgumentException
     {
         checkNonNull(manager, "manager");
@@ -766,7 +781,7 @@ public class Dao<TEntity>
         Query query = manager.newQuery(jdoql);
         query.setClass(entityClass);
 
-        query.deletePersistentAll(parameters);
+        return query.deletePersistentAll(parameters);
     }
 
 
