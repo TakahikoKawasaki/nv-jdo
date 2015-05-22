@@ -46,6 +46,7 @@ import javax.jdo.Query;
  * </pre>
  *
  * @param <TEntity>
+ *         The class that represents the entity.
  *
  * @since 1.2
  *
@@ -1009,6 +1010,13 @@ public class Dao<TEntity>
      * @param entities
      *         Entities to be made persistent.
      *
+     * @return
+     *         The parameter instance for parameters in the transient or persistent
+     *         state, or the corresponding persistent instance for detached parameter
+     *         instances, with an iteration in the same order as in the parameter
+     *         collection. (= The value returned from {@link
+     *         PersistenceManager#makePersistentAll(Collection)}).
+     *
      * @throws IllegalArgumentException
      *         {@code entities} is {@code null}.
      *
@@ -1044,6 +1052,13 @@ public class Dao<TEntity>
      *
      * @param entities
      *         Entities to be made persistent.
+     *
+     * @return
+     *         The parameter instance for parameters in the transient or persistent
+     *         state, or the corresponding persistent instance for detached parameter
+     *         instances, with an iteration in the same order as in the parameter
+     *         collection. (= The value returned from {@link
+     *         PersistenceManager#makePersistentAll(Collection)}).
      *
      * @throws IllegalArgumentException
      *         {@code factory} is {@code null}, or {@code entities} is {@code null}.
@@ -1086,6 +1101,13 @@ public class Dao<TEntity>
      * @param entities
      *         Entities to be made persistent.
      *
+     * @return
+     *         The parameter instance for parameters in the transient or persistent
+     *         state, or the corresponding persistent instance for detached parameter
+     *         instances, with an iteration in the same order as in the parameter
+     *         collection. (= The value returned from {@link
+     *         PersistenceManager#makePersistentAll(Collection)}).
+     *
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code entities} is {@code null}.
      *
@@ -1112,6 +1134,12 @@ public class Dao<TEntity>
      *
      * @param entities
      *         Entities to be made persistent.
+     *
+     * @return
+     *         The parameter instances for parameters in the transient or persistent state,
+     *         or the corresponding persistent instance for detached parameter instances,
+     *         in the same order as in the parameter array. (= The value returned from
+     *         {@link PersistenceManager#makePersistentAll(Object...)}).
      *
      * @throws IllegalArgumentException
      *         {@code entities} is {@code null}.
@@ -1147,6 +1175,12 @@ public class Dao<TEntity>
      *
      * @param entities
      *         Entities to be made persistent.
+     *
+     * @return
+     *         The parameter instances for parameters in the transient or persistent state,
+     *         or the corresponding persistent instance for detached parameter instances,
+     *         in the same order as in the parameter array. (= The value returned from
+     *         {@link PersistenceManager#makePersistentAll(Object...)}).
      *
      * @throws IllegalArgumentException
      *         {@code factory} is {@code null}, or {@code entities} is {@code null}.
@@ -1187,6 +1221,12 @@ public class Dao<TEntity>
      *
      * @param entities
      *         Entities to be made persistent.
+     *
+     * @return
+     *         The parameter instances for parameters in the transient or persistent state,
+     *         or the corresponding persistent instance for detached parameter instances,
+     *         in the same order as in the parameter array. (= The value returned from
+     *         {@link PersistenceManager#makePersistentAll(Object...)}).
      *
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code entities} is {@code null}.
