@@ -93,7 +93,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.12</version>
+    <version>1.13</version>
 </dependency>
 ```
 
