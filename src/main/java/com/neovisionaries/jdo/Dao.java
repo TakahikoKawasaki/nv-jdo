@@ -1683,7 +1683,8 @@ public class Dao<TEntity>
 
 
     /**
-     * Get an entity using JDOQL.
+     * Get an entity using JDOQL. If there are multiple entities that
+     * match the query, the first one in the query result is returned.
      * A persistence manager factory must be set before this method is called.
      *
      * @param jdoql
@@ -1693,7 +1694,7 @@ public class Dao<TEntity>
      *         Parameters of the JDOQL.
      *
      * @return
-     *         An entity
+     *         An entity. {@code null} if no entity matches the given query.
      *
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
@@ -1719,7 +1720,8 @@ public class Dao<TEntity>
 
 
     /**
-     * Get an entity using JDOQL.
+     * Get an entity using JDOQL. If there are multiple entities that
+     * match the query, the first one in the query result is returned.
      *
      * @param factory
      *         A persistence manager factory.
@@ -1731,7 +1733,7 @@ public class Dao<TEntity>
      *         Parameters of the JDOQL.
      *
      * @return
-     *         Entities.
+     *         An entity. {@code null} if no entity matches the given query.
      *
      * @throws IllegalArgumentException
      *         {@code factory} is {@code null}, or {@code jdoql} is {@code null}.
@@ -1762,7 +1764,8 @@ public class Dao<TEntity>
 
 
     /**
-     * Get an entity using JDOQL.
+     * Get an entity using JDOQL. If there are multiple entities that
+     * match the query, the first one in the query result is returned.
      *
      * @param manager
      *         A persistence manager.
@@ -1774,7 +1777,7 @@ public class Dao<TEntity>
      *         Parameters of the JDOQL.
      *
      * @return
-     *         An entity.
+     *         An entity. {@code null} if no entity matches the given query.
      *
      * @throws IllegalArgumentException
      *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
@@ -1790,8 +1793,14 @@ public class Dao<TEntity>
 
         Query query = manager.newQuery(jdoql);
         query.setClass(entityClass);
-        query.setUnique(true);
 
-        return (TEntity)query.executeWithArray(parameters);
+        List<TEntity> list = (List<TEntity>)query.executeWithArray(parameters);
+
+        if (list == null || list.size() == 0)
+        {
+            return null;
+        }
+
+        return list.get(0);
     }
 }
