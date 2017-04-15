@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Neo Visionaries Inc.
+ * Copyright (C) 2014-2017 Neo Visionaries Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,12 @@ import javax.jdo.PersistenceManager;
 
 /**
  * Task executed by {@link TaskExecutor}.
+ *
+ * <p>
+ * {@link TransactionAwareTask} is an interface which inherits this interface.
+ * {@link TaskAdapter} is an empty implementation of the {@code TransactionAwareTask}
+ * interface.
+ * </p>
  *
  * @since 1.2
  *

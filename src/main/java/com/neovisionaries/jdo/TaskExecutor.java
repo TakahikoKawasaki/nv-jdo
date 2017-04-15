@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Neo Visionaries Inc.
+ * Copyright (C) 2014-2017 Neo Visionaries Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,21 +31,26 @@ import javax.jdo.Transaction;
  * </style>
  * <pre class="sample" style="border: solid 1px black; margin: 0.5em; padding: 0.5em;">
  * <span class="comment">// Persistence manager factory.</span>
- * PersistenceManagerFactory factory = ...;
+ * {@link PersistenceManagerFactory} factory = ...;
  *
  * <span class="comment">// Create a task executor.</span>
- * TaskExecutor executor = new {@link #TaskExecutor(PersistenceManagerFactory) TaskExecutor(factory)};
+ * {@link TaskExecutor} executor = new {@link #TaskExecutor(PersistenceManagerFactory) TaskExecutor}{@code (factory)};
  *
  * <span class="comment">// Create a task.</span>
- * Task task = new Task() {
+ * {@link Task} task = new {@link TaskAdapter}() {
  *     &#x40;Override
- *     public Object run(PersistenceManager manager) {
+ *     public void beforeTransactionBegin({@link PersistenceManager} manager, {@link Transaction} tx) {
+ *         tx.{@link Transaction#setOptimistic(boolean) setOptimistic}(false);
+ *     }
+ *
+ *     &#x40;Override
+ *     public Object run({@link PersistenceManager} manager) {
  *         ......
  *     }
  * };
  *
  * <span class="comment">// Execute the task.</span>
- * executor.{@link #execute(Task, boolean, int) execute(task, true, 2)};
+ * executor.{@link #execute(Task, boolean, int) execute}{@code (task, true, 2)};
  * </pre>
  *
  * @since 1.2
@@ -237,10 +242,8 @@ public class TaskExecutor
         // If transaction is required.
         if (transaction)
         {
-            // Start a transaction. begin() throws JDOUserException
-            // if something is wrong.
-            tx = manager.currentTransaction();
-            tx.begin();
+            // Begin a transaction.
+            tx = beginTransaction(manager, task);
         }
 
         try
@@ -250,8 +253,8 @@ public class TaskExecutor
 
             if (tx != null)
             {
-                // Commit the changes, if any.
-                tx.commit();
+                // Commit the changes.
+                commitTransaction(manager, task, tx);
             }
 
             return ret;
@@ -262,8 +265,93 @@ public class TaskExecutor
             if (tx != null && tx.isActive())
             {
                 // Revoke the changes.
-                tx.rollback();
+                rollbackTransaction(manager, task, tx);
             }
+        }
+    }
+
+
+    private static TransactionAwareTask cast(Task task)
+    {
+        if (task instanceof TransactionAwareTask)
+        {
+            return (TransactionAwareTask)task;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    private static Transaction beginTransaction(PersistenceManager manager, Task task)
+    {
+        // Get the current transaction.
+        Transaction tx = manager.currentTransaction();
+
+        // Cast by TransactionAwareTask if possible.
+        TransactionAwareTask tat = cast(task);
+
+        if (tat != null)
+        {
+            // Call a hook before beginning a transaction.
+            tat.beforeTransactionBegin(manager, tx);
+        }
+
+        // Start a transaction.
+        // begin() throws JDOUserException if something is wrong.
+        tx.begin();
+
+        if (tat != null)
+        {
+            // Call a hook after beginning a transaction.
+            tat.afterTransactionBegin(manager, tx);
+        }
+
+        return tx;
+    }
+
+
+    private static void commitTransaction(PersistenceManager manager, Task task, Transaction tx)
+    {
+        // Cast by TransactionAwareTask if possible.
+        TransactionAwareTask tat = cast(task);
+
+        if (tat != null)
+        {
+            // Call a hook before committing a transaction.
+            tat.beforeTransactionCommit(manager, tx);
+        }
+
+        // Commit the changes.
+        tx.commit();
+
+        if (tat != null)
+        {
+            // Call a hook after committing a transaction.
+            tat.afterTransactionCommit(manager, tx);
+        }
+    }
+
+
+    private static void rollbackTransaction(PersistenceManager manager, Task task, Transaction tx)
+    {
+        // Cast by TransactionAwareTask if possible.
+        TransactionAwareTask tat = cast(task);
+
+        if (tat != null)
+        {
+            // Call a hook before rollbacking a transaction.
+            tat.beforeTransactionRollback(manager, tx);
+        }
+
+        // Revoke the changes.
+        tx.rollback();
+
+        if (tat != null)
+        {
+            // Call a hook after rollbacking a transaction.
+            tat.afterTransactionRollback(manager, tx);
         }
     }
 
