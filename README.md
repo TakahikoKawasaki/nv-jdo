@@ -4,11 +4,18 @@ nv-jdo
 Overview
 --------
 
-Utilities related to JDO.
+Utilities for JDO.
 
-* Dao - Generic DAO implementation based on JDO.
-* Task - Task executed by TaskExecutor.
-* TaskExecutor - Task executor.
+| Class          | Description                                     |
+|:---------------|:------------------------------------------------|
+| `Dao`          | Generic DAO implementation based on JDO.        |
+| `TaskAdapter`  | Empty implementation of `TransactionAwareTask`. |
+| `TaskExecutor` | Task executor with or without transaction.      |
+
+| Interface              | Description                                                      |
+|:-----------------------|:-----------------------------------------------------------------|
+| `Task`                 | Task executed by `TaskExecutor`.                                 |
+| `TransactionAwareTask` | Sub interface of `Task` with additional methods for transaction. |
 
 
 License
@@ -17,16 +24,28 @@ License
 Apache License, Version 2.0
 
 
-Download
---------
+Maven
+-----
 
-    git clone https://github.com/TakahikoKawasaki/nv-jdo.git
+```xml
+<dependency>
+    <groupId>com.neovisionaries</groupId>
+    <artifactId>nv-jdo</artifactId>
+    <version>1.16</version>
+</dependency>
+```
+
+
+Source Code
+-----------
+
+  <code>https://github.com/TakahikoKawasaki/nv-jdo.git</code>
 
 
 Javadoc
 -------
 
-[nv-jdo JavaDoc](http://TakahikoKawasaki.github.com/nv-jdo/)
+  <code>http://TakahikoKawasaki.github.io/nv-jdo/</code>
 
 
 Example
@@ -75,7 +94,12 @@ PersistenceManagerFactory factory = ...;
 TaskExecutor executor = new TaskExecutor(factory);
 
 // Create a task.
-Task task = new Task() {
+Task task = new TaskAdapter() {
+    @Override
+    public void beforeTransactionBegin(PersistenceManager manager, Transaction tx) {
+        tx.setOptimistic(false);
+    }
+
     @Override
     public Object run(PersistenceManager manager) {
         ......
@@ -84,17 +108,6 @@ Task task = new Task() {
 
 // Execute the task.
 executor.execute(task, true, 2);
-```
-
-Maven
------
-
-```xml
-<dependency>
-    <groupId>com.neovisionaries</groupId>
-    <artifactId>nv-jdo</artifactId>
-    <version>1.14</version>
-</dependency>
 ```
 
 
@@ -107,4 +120,5 @@ See Also
 Author
 ------
 
-Takahiko Kawasaki, Neo Visionaries Inc.
+[Authlete, Inc.](https://www.authlete.com/) & Neo Visionaries Inc.<br/>
+Takahiko Kawasaki &lt;taka@authlete.com&gt;
