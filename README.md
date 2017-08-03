@@ -31,7 +31,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.16</version>
+    <version>1.17</version>
 </dependency>
 ```
 
