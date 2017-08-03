@@ -18,6 +18,7 @@ package com.neovisionaries.jdo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.JDOUserException;
 import javax.jdo.PersistenceManager;
@@ -1806,7 +1807,10 @@ public class Dao<TEntity>
 
 
     /**
-     * Execute a query with parameters.
+     * Execute a query with parameters. This method is just an alias of
+     * {@link #executeWithArrayByQuery(QueryLanguage, String, Object...)
+     * executeWithArrayByQuery}<code>({@link QueryLanguage#JDOQL}, query,
+     * parameters)</code>.
      *
      * @param query
      *         A query written in JDOQL.
@@ -1833,7 +1837,7 @@ public class Dao<TEntity>
     public Object executeWithArrayByQuery(String query, Object... parameters)
                     throws IllegalArgumentException, IllegalStateException
     {
-        return executeWithArrayByQuery(factory, QueryLanguage.JDOQL, query, parameters);
+        return executeWithArrayByQuery(QueryLanguage.JDOQL, query, parameters);
     }
 
 
@@ -2022,5 +2026,228 @@ public class Dao<TEntity>
         checkNonNull(query,    "query");
 
         return manager.newQuery(language.getIdentifier(), query).executeWithArray(parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters. This method is just an alias of
+     * {@link #executeWithMapByQuery(QueryLanguage, String, Map)
+     * executeWithMapByQuery}<code>({@link QueryLanguage#JDOQL}, query,
+     * parameters)</code>.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.17
+     */
+    public Object executeWithMapByQuery(String query, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeWithMapByQuery(QueryLanguage.JDOQL, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code language} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.17
+     */
+    public Object executeWithMapByQuery(
+            QueryLanguage language, String query, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(language, "language");
+        checkNonNull(query,    "query");
+
+        return executeWithMapByQuery(factory, language, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters. This method is just an alias of
+     * {@link #executeWithMapByQuery(PersistenceManagerFactory,
+     * QueryLanguage, String, Map) executeWithMapByQuery}<code>(factory,
+     * {@link QueryLanguage#JDOQL}, query, parameters)</code>.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.17
+     */
+    public Object executeWithMapByQuery(
+            PersistenceManagerFactory factory, String query, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeWithMapByQuery(factory, QueryLanguage.JDOQL, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory}, {@code language}, or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.17
+     */
+    public Object executeWithMapByQuery(
+            PersistenceManagerFactory factory, QueryLanguage language, String query, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(language, "language");
+        checkNonNull(query,    "query");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return executeWithMapByQuery(manager, language, query, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Execute a query with parameters. This method is just an alias of
+     * {@link #executeWithMapByQuery(PersistenceManager, QueryLanguage,
+     * String, Map) executeWithMapByQuery}<code>(manager,
+     * {@link QueryLanguage#JDOQL}, query, parameters)</code>.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} or {@code query} is {@code null}.
+     *
+     * @since 1.17
+     */
+    public Object executeWithMapByQuery(
+            PersistenceManager manager, String query, Map<?,?> parameters)
+                    throws IllegalArgumentException
+    {
+        return executeWithMapByQuery(manager, QueryLanguage.JDOQL, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager}, {@code language}, or {@code query} is {@code null}.
+     *
+     * @since 1.17
+     */
+    public Object executeWithMapByQuery(
+            PersistenceManager manager, QueryLanguage language, String query, Map<?,?> parameters)
+                    throws IllegalArgumentException
+    {
+        checkNonNull(manager,  "manager");
+        checkNonNull(language, "language");
+        checkNonNull(query,    "query");
+
+        return manager.newQuery(language.getIdentifier(), query).executeWithMap(parameters);
     }
 }
