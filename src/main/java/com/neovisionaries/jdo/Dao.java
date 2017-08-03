@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Neo Visionaries Inc.
+ * Copyright (C) 2014-2017 Neo Visionaries Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1697,7 +1697,7 @@ public class Dao<TEntity>
      *         An entity. {@code null} if no entity matches the given query.
      *
      * @throws IllegalArgumentException
-     *         {@code manager} is {@code null}, or {@code jdoql} is {@code null}.
+     *         {@code jdoql} is {@code null}.
      *
      * @throws IllegalStateException
      *         A persistence manager factory is not set. Or,
@@ -1802,5 +1802,225 @@ public class Dao<TEntity>
         }
 
         return list.get(0);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.17
+     */
+    public Object executeWithArrayByQuery(String query, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeWithArrayByQuery(factory, QueryLanguage.JDOQL, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code language} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.17
+     */
+    public Object executeWithArrayByQuery(
+            QueryLanguage language, String query, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(language, "language");
+        checkNonNull(query,    "query");
+
+        return executeWithArrayByQuery(factory, language, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters. This method is just an alias of
+     * {@link #executeWithArrayByQuery(PersistenceManagerFactory,
+     * QueryLanguage, String, Object...) executeWithArrayByQuery}<code>(factory,
+     * {@link QueryLanguage#JDOQL}, query, parameters)</code>.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.17
+     */
+    public Object executeWithArrayByQuery(
+            PersistenceManagerFactory factory, String query, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeWithArrayByQuery(factory, QueryLanguage.JDOQL, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory}, {@code language}, or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.17
+     */
+    public Object executeWithArrayByQuery(
+            PersistenceManagerFactory factory, QueryLanguage language, String query, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(language, "language");
+        checkNonNull(query,    "query");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return executeWithArrayByQuery(manager, language, query, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Execute a query with parameters. This method is just an alias of
+     * {@link #executeWithArrayByQuery(PersistenceManager, QueryLanguage,
+     * String, Object...) executeWithArrayByQuery}<code>(manager,
+     * {@link QueryLanguage#JDOQL}, query, parameters)</code>.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager} or {@code query} is {@code null}.
+     *
+     * @since 1.17
+     */
+    public Object executeWithArrayByQuery(
+            PersistenceManager manager, String query, Object... parameters)
+                    throws IllegalArgumentException
+    {
+        return executeWithArrayByQuery(manager, QueryLanguage.JDOQL, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         The result of the query.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager}, {@code language}, or {@code query} is {@code null}.
+     *
+     * @since 1.17
+     */
+    public Object executeWithArrayByQuery(
+            PersistenceManager manager, QueryLanguage language, String query, Object... parameters)
+                    throws IllegalArgumentException
+    {
+        checkNonNull(manager,  "manager");
+        checkNonNull(language, "language");
+        checkNonNull(query,    "query");
+
+        return manager.newQuery(language.getIdentifier(), query).executeWithArray(parameters);
     }
 }
