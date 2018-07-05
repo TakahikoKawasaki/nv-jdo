@@ -19,6 +19,7 @@ package com.neovisionaries.jdo;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.JDOUserException;
 import javax.jdo.PersistenceManager;
@@ -2249,5 +2250,265 @@ public class Dao<TEntity>
         checkNonNull(query,    "query");
 
         return manager.newQuery(language.getIdentifier(), query).executeWithMap(parameters);
+    }
+
+
+    ////////////////////////
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class. This method
+     * is just an alias of {@link #executeListWithArrayByQuery(PersistenceManagerFactory,
+     * Class, String, Object...) executeListWithArrayByQuery}<code>({@link QueryLanguage#JDOQL},
+     * resultEntityClass, query, parameters)</code>.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code language}, {@code resultEntityClass} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
+            String query, Class<ResultEntity> resultEntityClass, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeListWithArrayByQuery(factory, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code language}, {@code resultEntityClass} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
+            QueryLanguage language, String query, Class<ResultEntity> resultEntityClass,
+            Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(language,          "language");
+        checkNonNull(resultEntityClass, "resultEntityClass");
+        checkNonNull(query,             "query");
+
+        return executeListWithArrayByQuery(factory, language, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class. This method
+     * is just an alias of {@link #executeListWithArrayByQuery(PersistenceManagerFactory,
+     * QueryLanguage, Class, String, Object...) executeListWithArrayByQuery}<code>(factory,
+     * {@link QueryLanguage#JDOQL}, resultEntityClass, query, parameters)</code>.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory}, {@code resultEntityClass} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
+            PersistenceManagerFactory factory, Class<ResultEntity> resultEntityClass,
+            String query, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeListWithArrayByQuery(factory, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory}, {@code language}, {@code resultEntityClass} or
+     *         {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
+            PersistenceManagerFactory factory, QueryLanguage language, Class<ResultEntity> resultEntityClass,
+            String query, Object... parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory,  "factory");
+        checkNonNull(language, "language");
+        checkNonNull(resultEntityClass, "resultEntityClass");
+        checkNonNull(query,    "query");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return executeListWithArrayByQuery(manager, language, resultEntityClass, query, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class. This method
+     * is just an alias of {@link #executeListWithArrayByQuery(PersistenceManager,
+     * QueryLanguage, Class, String, Object...) executeListWithArrayByQuery}<code>(manager,
+     * {@link QueryLanguage#JDOQL}, resultEntityClass, query, parameters)</code>.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager}, {@code resultEntityClass} or {@code query} is
+     *         {@code null}.
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
+            PersistenceManager manager, Class<ResultEntity> resultEntityClass,
+            String query, Object... parameters)
+                    throws IllegalArgumentException
+    {
+        return executeListWithArrayByQuery(manager, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager}, {@code language}, {@code resultEntityClass} or
+     *         {@code query} is {@code null}.
+     *
+     * @since 1.18
+     */
+    @SuppressWarnings("unchecked")
+    public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
+            PersistenceManager manager, QueryLanguage language, Class<ResultEntity> resultEntityClass,
+            String query, Object... parameters)
+                    throws IllegalArgumentException
+    {
+        checkNonNull(manager,           "manager");
+        checkNonNull(language,          "language");
+        checkNonNull(resultEntityClass, "entityClass");
+        checkNonNull(query,             "query");
+
+        Query q = manager.newQuery(language.getIdentifier(), query);
+        q.setClass(resultEntityClass);
+
+        return (List<ResultEntity>)q.executeWithArray(parameters);
     }
 }
