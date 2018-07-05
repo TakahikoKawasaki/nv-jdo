@@ -2253,9 +2253,6 @@ public class Dao<TEntity>
     }
 
 
-    ////////////////////////
-
-
     /**
      * Execute a query with parameters to get a list of an entity class. This method
      * is just an alias of {@link #executeListWithArrayByQuery(PersistenceManagerFactory,
@@ -2414,10 +2411,10 @@ public class Dao<TEntity>
             String query, Object... parameters)
                     throws IllegalArgumentException, IllegalStateException
     {
-        checkNonNull(factory,  "factory");
-        checkNonNull(language, "language");
+        checkNonNull(factory,           "factory");
+        checkNonNull(language,          "language");
         checkNonNull(resultEntityClass, "resultEntityClass");
-        checkNonNull(query,    "query");
+        checkNonNull(query,             "query");
 
         PersistenceManager manager = createManager(factory);
 
@@ -2510,5 +2507,262 @@ public class Dao<TEntity>
         q.setClass(resultEntityClass);
 
         return (List<ResultEntity>)q.executeWithArray(parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class. This method
+     * is just an alias of {@link #executeListWithMapByQuery(PersistenceManagerFactory,
+     * Class, String, Object...) executeListWithMapByQuery}<code>({@link QueryLanguage#JDOQL},
+     * resultEntityClass, query, parameters)</code>.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code language}, {@code resultEntityClass} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
+            String query, Class<ResultEntity> resultEntityClass, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeListWithMapByQuery(factory, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code language}, {@code resultEntityClass} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         A persistence manager factory is not set. Or,
+     *         failed to create a persistence manager from the
+     *         persistence manager factory that this instance holds
+     *         (= {@code PersistenceManagerFactory.}{@link
+     *         PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed).
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
+            QueryLanguage language, String query, Class<ResultEntity> resultEntityClass,
+            Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(language,          "language");
+        checkNonNull(resultEntityClass, "resultEntityClass");
+        checkNonNull(query,             "query");
+
+        return executeListWithMapByQuery(factory, language, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class. This method
+     * is just an alias of {@link #executeListWithMapByQuery(PersistenceManagerFactory,
+     * QueryLanguage, Class, String, Object...) executeListWithMapByQuery}<code>(factory,
+     * {@link QueryLanguage#JDOQL}, resultEntityClass, query, parameters)</code>.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory}, {@code resultEntityClass} or {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
+            PersistenceManagerFactory factory, Class<ResultEntity> resultEntityClass,
+            String query, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        return executeListWithMapByQuery(factory, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class.
+     *
+     * @param factory
+     *         A persistence manager factory.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code factory}, {@code language}, {@code resultEntityClass} or
+     *         {@code query} is {@code null}.
+     *
+     * @throws IllegalStateException
+     *         {@code factory.}{@link PersistenceManagerFactory#getPersistenceManager()
+     *         getPersistenceManager()} failed.
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
+            PersistenceManagerFactory factory, QueryLanguage language, Class<ResultEntity> resultEntityClass,
+            String query, Map<?,?> parameters)
+                    throws IllegalArgumentException, IllegalStateException
+    {
+        checkNonNull(factory,           "factory");
+        checkNonNull(language,          "language");
+        checkNonNull(resultEntityClass, "resultEntityClass");
+        checkNonNull(query,             "query");
+
+        PersistenceManager manager = createManager(factory);
+
+        try
+        {
+            return executeListWithMapByQuery(manager, language, resultEntityClass, query, parameters);
+        }
+        finally
+        {
+            manager.close();
+        }
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class. This method
+     * is just an alias of {@link #executeListWithMapByQuery(PersistenceManager,
+     * QueryLanguage, Class, String, Object...) executeListWithMapByQuery}<code>(manager,
+     * {@link QueryLanguage#JDOQL}, resultEntityClass, query, parameters)</code>.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in JDOQL.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager}, {@code resultEntityClass} or {@code query} is
+     *         {@code null}.
+     *
+     * @since 1.18
+     */
+    public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
+            PersistenceManager manager, Class<ResultEntity> resultEntityClass,
+            String query, Map<?,?> parameters)
+                    throws IllegalArgumentException
+    {
+        return executeListWithMapByQuery(manager, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
+    }
+
+
+    /**
+     * Execute a query with parameters to get a list of an entity class.
+     *
+     * @param manager
+     *         A persistence manager.
+     *
+     * @param language
+     *         A type of query language.
+     *
+     * @param resultEntityClass
+     *         An entity class.
+     *
+     * @param query
+     *         A query written in the query language.
+     *
+     * @param parameters
+     *         Parameters of the query.
+     *
+     * @return
+     *         A list of the entity class.
+     *
+     * @throws IllegalArgumentException
+     *         {@code manager}, {@code language}, {@code resultEntityClass} or
+     *         {@code query} is {@code null}.
+     *
+     * @since 1.18
+     */
+    @SuppressWarnings("unchecked")
+    public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
+            PersistenceManager manager, QueryLanguage language, Class<ResultEntity> resultEntityClass,
+            String query, Map<?,?> parameters)
+                    throws IllegalArgumentException
+    {
+        checkNonNull(manager,           "manager");
+        checkNonNull(language,          "language");
+        checkNonNull(resultEntityClass, "entityClass");
+        checkNonNull(query,             "query");
+
+        Query q = manager.newQuery(language.getIdentifier(), query);
+        q.setClass(resultEntityClass);
+
+        return (List<ResultEntity>)q.executeWithMap(parameters);
     }
 }
