@@ -2285,7 +2285,7 @@ public class Dao<TEntity>
      * @since 1.18
      */
     public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
-            String query, Class<ResultEntity> resultEntityClass, Object... parameters)
+            Class<ResultEntity> resultEntityClass, String query, Object... parameters)
                     throws IllegalArgumentException, IllegalStateException
     {
         return executeListWithArrayByQuery(factory, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
@@ -2324,7 +2324,7 @@ public class Dao<TEntity>
      * @since 1.18
      */
     public <ResultEntity> List<ResultEntity> executeListWithArrayByQuery(
-            QueryLanguage language, String query, Class<ResultEntity> resultEntityClass,
+            QueryLanguage language, Class<ResultEntity> resultEntityClass, String query,
             Object... parameters)
                     throws IllegalArgumentException, IllegalStateException
     {
@@ -2542,7 +2542,7 @@ public class Dao<TEntity>
      * @since 1.18
      */
     public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
-            String query, Class<ResultEntity> resultEntityClass, Map<?,?> parameters)
+            Class<ResultEntity> resultEntityClass, String query, Map<?,?> parameters)
                     throws IllegalArgumentException, IllegalStateException
     {
         return executeListWithMapByQuery(factory, QueryLanguage.JDOQL, resultEntityClass, query, parameters);
@@ -2581,7 +2581,7 @@ public class Dao<TEntity>
      * @since 1.18
      */
     public <ResultEntity> List<ResultEntity> executeListWithMapByQuery(
-            QueryLanguage language, String query, Class<ResultEntity> resultEntityClass,
+            QueryLanguage language, Class<ResultEntity> resultEntityClass, String query,
             Map<?,?> parameters)
                     throws IllegalArgumentException, IllegalStateException
     {
