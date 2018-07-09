@@ -31,7 +31,7 @@ Maven
 <dependency>
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.17</version>
+    <version>1.18</version>
 </dependency>
 ```
 
@@ -120,5 +120,12 @@ See Also
 Author
 ------
 
-[Authlete, Inc.](https://www.authlete.com/) & Neo Visionaries Inc.<br/>
+[Authlete, Inc.](https://www.authlete.com/)<br/>
 Takahiko Kawasaki &lt;taka@authlete.com&gt;
+
+
+Contributors
+------------
+
+[Authlete, Inc.](https://www.authlete.com/)<br/>
+Hideki Ikeda &lt;hide@authlete.com&gt;

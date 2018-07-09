@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+1.18 (2018-07-09)
+-----------------
+
+- Added `executeListWithArrayByQuery` methods to `Dao` class.
+- Added `executeListWithMapByQuery` methods to `Dao` class.
+
+
 1.17 (2017-08-03)
 -----------------
 
