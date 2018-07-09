@@ -2500,7 +2500,7 @@ public class Dao<TEntity>
     {
         checkNonNull(manager,           "manager");
         checkNonNull(language,          "language");
-        checkNonNull(resultEntityClass, "entityClass");
+        checkNonNull(resultEntityClass, "resultEntityClass");
         checkNonNull(query,             "query");
 
         Query q = manager.newQuery(language.getIdentifier(), query);
@@ -2757,7 +2757,7 @@ public class Dao<TEntity>
     {
         checkNonNull(manager,           "manager");
         checkNonNull(language,          "language");
-        checkNonNull(resultEntityClass, "entityClass");
+        checkNonNull(resultEntityClass, "resultEntityClass");
         checkNonNull(query,             "query");
 
         Query q = manager.newQuery(language.getIdentifier(), query);
