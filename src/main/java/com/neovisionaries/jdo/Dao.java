@@ -19,7 +19,6 @@ package com.neovisionaries.jdo;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.JDOUserException;
 import javax.jdo.PersistenceManager;
