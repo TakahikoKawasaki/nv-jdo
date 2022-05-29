@@ -4,7 +4,7 @@
 
     <groupId>com.neovisionaries</groupId>
     <artifactId>nv-jdo</artifactId>
-    <version>1.19-SNAPSHOT</version>
+    <version>1.19</version>
     <packaging>bundle</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Utilities for JDO</description>
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:TakahikoKawasaki/${project.artifactId}.git</connection>
         <developerConnection>scm:git:git@github.com:TakahikoKawasaki/${project.artifactId}.git</developerConnection>
         <url>git@github.com:TakahikoKawasaki/${project.artifactId}.git</url>
-        <tag>HEAD</tag>
+        <tag>nv-jdo-1.19</tag>
     </scm>
 
     <properties>
