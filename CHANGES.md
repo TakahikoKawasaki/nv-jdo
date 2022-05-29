@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+- `TaskExecutor` class
+    * Added `TaskExecutor(PersistenceManager)` constructor.
+    * Added `execute(Task, int)` method.
+    * Added `getFactory()` method.
+    * Added `getManager()` method.
+
+
 1.18 (2018-07-09)
 -----------------
 
