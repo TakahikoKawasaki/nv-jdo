@@ -1,6 +1,9 @@
 CHANGES
 =======
 
+1.19 (2022-05-30)
+-----------------
+
 - `TaskExecutor` class
     * Added `TaskExecutor(PersistenceManager)` constructor.
     * Added `execute(Task, int)` method.
